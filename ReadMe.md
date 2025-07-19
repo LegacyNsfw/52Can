@@ -1,4 +1,4 @@
-# Gauge Pod Software 
+# 52Can: CANbus display in a 52mm gauge pod
 
 Designed for the following hardware:
 
