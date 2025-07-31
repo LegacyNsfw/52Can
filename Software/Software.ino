@@ -7,6 +7,9 @@
 #define DC   3
 #define RST  4
 
+#define width 128
+#define height 160
+
 Arduino_DataBus *bus = nullptr;
 Arduino_GFX *display = nullptr;    
 Arduino_GFX *canvas = nullptr;
@@ -42,23 +45,29 @@ void setup() {
     2, //  RST
     3, // rotation
     true, // ips
-    128, // width
-    160 // height    
+    width, // width
+    height // height
   );
   Serial.println("Display created.");
   
   //Serial.println("Creating canvas...");
-  //canvas = new Arduino_Canvas(width, height, display);
+  canvas = new Arduino_Canvas(width, height, display);
   //Serial.println("Canvas created.");
 
+  
   int speed = 12 * 1000 * 1000;
-  // Serial.println("Beginning bus...");
-  // bus->begin(speed, SPI_MODE0);
-  // Serial.println("Bus started.");
+  
+  // This approach doesn't work - only a corner of the display ends up being drawn.
+  // display->begin() calls tftInit(), which is required.
+  // bus->begin(speed, SPI_MODE0); 
+  
+  // This works, but not if you use a canvas.
+  // display->begin(speed);
 
-  Serial.println("Filling screen...");
-  display->begin(speed);
-  display->fillScreen(YELLOW);
+  // This allocates memory for the canvas framebuffer, and calls begin() on the display.
+  canvas->begin(speed);
+
+  display->fillScreen(RGB565_BLUE);
   Serial.println("Display initialized.");  
 
   wait();
@@ -73,8 +82,10 @@ void loop() {
   Serial.println(count);
   Serial.println(F("Looping. #####################################"));
   count = count+1;
-  uint color = ((count % 2) == 1) ? BLACK : YELLOW;
+  uint color = ((count % 2) == 1) ? RGB565_BLACK : RGB565_RED;
   Serial.println(color);
-  display->fillScreen(color);
+
+  canvas->fillRect(0, 0, height, width, color);
+  canvas->flush();
   display->flush();
 }
