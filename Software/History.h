@@ -11,15 +11,7 @@ public:
     size = _size;
     buffer = new int[_size];
     currentIndex = 0;
-    
-    // Check if allocation succeeded
-    if (buffer == nullptr) {
-      Serial.println("ERROR: History buffer allocation failed!");
-      size = 0;
-      return;
-    }
-    
-    // Initialize buffer to zero
+        
     for(int i = 0; i < _size; i++) {
       buffer[i] = 0;
     }
@@ -50,12 +42,13 @@ public:
       return -1;
     }
     
-    buffer[currentIndex] = value;
     currentIndex++;
     if (currentIndex >= size)
     {
       currentIndex = 0;
     }
+
+    buffer[currentIndex] = value;
     return currentIndex;
   }
 };

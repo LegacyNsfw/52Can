@@ -1,4 +1,5 @@
 #include <Arduino_GFX_Library.h>
+#include "Test.h"
 #include "Constants.h"
 #include "History.h"
 #include "DisplayComponent.h"
@@ -15,9 +16,6 @@ void DisplayComponent::initialize()
   count = 0;
   Serial.println("Creating bus...");
   bus =  new Arduino_ESP32SPI(DC, CS, SCLK, MOSI, BL);
-  //  1, // DC
-  //  0 // CS 
-  //);
   
   Serial.println("Creating display...");
   display = new Arduino_ST7735(

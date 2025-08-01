@@ -1,5 +1,6 @@
 //#include <stdlib.h>
 #include <Arduino.h>
+#include "Test.h"
 #include "Constants.h"
 #include "History.h"
 //#include "Test.h"
@@ -16,7 +17,6 @@ void History::debug()
   Serial.println();
 }
 
-/*
 void TestHistory()
 {
   History h2 = History(5);
@@ -32,4 +32,4 @@ void TestHistory()
   Assert("b3", h2.get(2), 4);
   Assert("b4", h2.get(3), 3);
   Assert("b5", h2.get(4), 2);
-}*/
+}
