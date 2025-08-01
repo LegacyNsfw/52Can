@@ -43,7 +43,7 @@ void setup() {
   display = new Arduino_ST7735(
     bus,
     2, //  RST
-    3, // rotation
+    0, // rotation
     true, // ips
     width, // width
     height // height
@@ -51,7 +51,7 @@ void setup() {
   Serial.println("Display created.");
   
   //Serial.println("Creating canvas...");
-  canvas = new Arduino_Canvas(width, height, display);
+  canvas = new Arduino_Canvas(width, height, display, 0, 0, 0);
   //Serial.println("Canvas created.");
 
   
@@ -78,14 +78,19 @@ void setup() {
 
 }
 
+// With the ST7735:
+// RGB565_RED is actually yellow
+
 void loop() {
   Serial.println(count);
   Serial.println(F("Looping. #####################################"));
   count = count+1;
-  uint color = ((count % 2) == 1) ? RGB565_BLACK : RGB565_RED;
+  uint color = ((count % 2) == 1) ? RGB565_BLACK : RGB565_WHITE;
   Serial.println(color);
 
-  canvas->fillRect(0, 0, height, width, color);
+  canvas->fillRect(0, 0, width, height, color);
   canvas->flush();
-  display->flush();
+  display->flush(); 
+
+  wait();
 }
