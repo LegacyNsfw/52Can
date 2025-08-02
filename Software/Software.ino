@@ -4,7 +4,9 @@
 #include "DisplayComponent.h"
 #include "Constants.h"
 
+History *historyComponent = nullptr;
 DisplayComponent *displayComponent = nullptr;
+
 
 void wait() {
   delay(250);
@@ -20,14 +22,17 @@ void setup() {
   wait();
   wait();
   Serial.println();
-  TestHistory();
-  Serial.println(F("52Can starting. ###########################################"));
 
+  Serial.println(F("52Can self-test starting. #################################"));
+  TestHistory();
+
+  Serial.println(F("History component initializing. ##########################"));
+  historyComponent = new History(height);
+  historyComponent->initialize();
+
+  Serial.println(F("Display component initializing. ##########################"));
   displayComponent = new DisplayComponent();
   displayComponent->initialize();
-
-  wait();
-
 
   Serial.println(F("Initialization complete. ##################################"));
 }

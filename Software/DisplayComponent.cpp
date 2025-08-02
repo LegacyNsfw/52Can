@@ -8,28 +8,44 @@ Arduino_DataBus *bus = nullptr;
 Arduino_GFX *display = nullptr;    
 Arduino_GFX *canvas = nullptr;
 
+// Colors are wonky:
+// red -> green
+// green -> blue
+// blue -> very light blue
+
 
 int count;
 
 void DisplayComponent::initialize()
 {  
   count = 0;
-  Serial.println("Creating bus...");
+  Serial.println("Creating bus...");  
   bus =  new Arduino_ESP32SPI(DC, CS, SCLK, MOSI, BL);
   
   Serial.println("Creating display...");
+
   display = new Arduino_ST7735(
     bus,
     2, //  RST
-    0, // rotation
+    3, // rotation - this is what unswaps the x and y below
     true, // ips
-    width, // width
-    height // height
+    height, // x
+    width // y
   );
   
   Serial.println("Creating canvas...");
-  canvas = new Arduino_Canvas(width, height, display, 0, 0, 0);
+  canvas = new Arduino_Canvas(height, width, display, 0, 0, 0);
 
+  // The Adafruit ST7735 breakout board is natively in portrait mode, and this app wants landscape.
+  // Rotation experiments:
+  // display: width, height, r=0; canvas: width, height, r=0; stripe on left does not get updated
+  // display: width, height, r=0; canvas: height, width, r=0; stripe on left does not get updated
+  // display: width, height, r=0; canvas: height, width, r=3; stripe on left does not get updated
+  // display: height, width, r=0; canvas: width, height, r=3; stripe on left does not get updated
+  // display: height, width, r=0; canvas: height, width, r=3; stripe on left does not get updated
+  // display: width, height, r=3; canvas: width, height, r=3; stripe on right does not get updated
+  // display: height, width, r=3; canvas: height, width, r=0; full screen works
+  
   
   Serial.println("Starting GFX...");
   int speed = 12 * 1000 * 1000;
@@ -53,10 +69,11 @@ void DisplayComponent::draw(History *pHistory, int temperature)
   Serial.println(count);
   
   count = count+1;
-  uint color = ((count % 2) == 1) ? RGB565_BLACK : RGB565_WHITE;
+  uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
 
-  canvas->fillRect(0, 0, width, height, color);
-  canvas->flush();
+  display->fillRect(0, 0, width, height, color);
+  //canvas->fillRect(0, 0, width, height, color);
+  //canvas->flush();
   display->flush(); 
 
   //char szTemperature[5];

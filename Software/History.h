@@ -11,16 +11,14 @@ public:
     size = _size;
     buffer = new int[_size];
     currentIndex = 0;
-        
-    for(int i = 0; i < _size; i++) {
-      buffer[i] = 0;
-    }
   }
   
   ~History()
   {
     delete[] buffer;
   }
+
+  void initialize();
 
   void debug();
 

@@ -6,6 +6,16 @@
 //#include "Test.h"
 #include "DisplayComponent.h" // must be included because it has the define for 'width'
 
+void History::initialize()
+{
+  currentIndex = 0;
+
+  for (int i = 0; i < size; i++)
+  {
+    buffer[i] = 0;
+  }
+}
+
 void History::debug()
 {
   Serial.print(F("History length: "));
