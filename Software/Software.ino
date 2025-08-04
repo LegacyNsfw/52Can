@@ -13,6 +13,8 @@ void wait() {
   yield();
 }
 
+int value;
+int rise;
 
 void setup() {
   // Wait for the serial port to be available, then announce startup.
@@ -22,6 +24,9 @@ void setup() {
   wait();
   wait();
   Serial.println();
+
+  value = width / 2;
+  rise = 1;
 
   Serial.println(F("52Can self-test starting. #################################"));
   TestHistory();
@@ -38,8 +43,26 @@ void setup() {
 }
 
 void loop() {
-  
+  if (value == width)
+  {
+    rise = 0;
+  }
+  else if (value == 0)
+  {
+    rise = 1;
+  }
+
+  if (rise == 1)
+  {
+    value+=2;
+  }
+  else 
+  {
+    value-=2;
+  }  
+
   displayComponent->draw(nullptr, 0);
 
+  Serial.println(value);
   wait();
 }

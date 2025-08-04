@@ -65,9 +65,7 @@ void DisplayComponent::initialize()
 }
 
 void DisplayComponent::draw(History *pHistory, int temperature)
-{
-  Serial.println(count);
-  
+{ 
   count = count+1;
   uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
 
