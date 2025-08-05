@@ -4,7 +4,8 @@
 #include "DisplayComponent.h"
 #include "Constants.h"
 
-History *historyComponent = nullptr;
+History *historyComponent1 = nullptr;
+History *historyComponent2 = nullptr;
 DisplayComponent *displayComponent = nullptr;
 
 
@@ -13,13 +14,19 @@ void wait() {
   yield();
 }
 
-int value;
-int rise;
+int value1;
+int rise1;
+
+int value2;
+int rise2;
 
 void setup() {
   // Initialize static variables
-  value = width / 2;
-  rise = 1;
+  value1 = 0;
+  rise1 = 1;
+
+  value2 = 64;
+  rise2 = 1;
 
   // Wait for the serial port to be available.
   Serial.begin(115200);
@@ -32,8 +39,11 @@ void setup() {
   TestHistory();
 
   Serial.println(F("History component initializing. ##########################"));
-  historyComponent = new History(width);
-  historyComponent->initialize();
+  historyComponent1 = new History(width);
+  historyComponent1->initialize();
+
+  historyComponent2 = new History(width);
+  historyComponent2->initialize();
 
   Serial.println(F("Display component initializing. ##########################"));
   displayComponent = new DisplayComponent();
@@ -43,26 +53,49 @@ void setup() {
 }
 
 void loop() {
-  if (value == height-1)
+  // Animate value1
+  if (value1 == height-1)
   {
-    rise = 0;
+    rise1 = 0;
   }
-  else if (value == 0)
+  else if (value1 == 0)
   {
-    rise = 1;
+    rise1 = 1;
   }
 
-  if (rise == 1)
+  if (rise1 == 1)
   {
-    value+=1;
+    value1+=1;
   }
   else 
   {
-    value-=1;
+    value1-=1;
   }  
 
-  historyComponent->push(value);
-  displayComponent->draw(historyComponent, 0);
+  // Animate value2
+  if (value2 == height-1)
+  {
+    rise2 = 0;
+  }
+  else if (value2 == 0)
+  {
+    rise2 = 1;
+  }
 
-  Serial.println(value);
+  if (rise2 == 1)
+  {
+    value2+=1;
+  }
+  else
+  {
+    value2-=1;
+  }
+
+  historyComponent1->push(value1);
+  historyComponent2->push(value2);
+  displayComponent->draw(historyComponent1, historyComponent2, 0);
+
+  Serial.print(value1);
+  Serial.print(", ");
+  Serial.println(value2);
 }

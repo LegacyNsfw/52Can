@@ -13,17 +13,8 @@ Arduino_GFX *canvas = nullptr;
 // green -> blue
 // blue -> very light blue
 
-// Not sure why this is, but it seems to be a bug in the library.
-#define WTF_BLACK RGB565_WHITE
-#define WTF_WHITE RGB565_BLACK
-#define WTF_GREEN RGB565_RED
-#define WTF_BLUE RGB565_GREEN
-
-int count;
-
 void DisplayComponent::initialize()
-{  
-  count = 0;
+{
   Serial.println("Creating bus...");  
   bus =  new Arduino_ESP32SPI(DC, CS, SCLK, MOSI, BL);
   
@@ -58,23 +49,19 @@ void DisplayComponent::initialize()
   Serial.println("Display initialized.");  
 }
 
-void DisplayComponent::draw(History *pHistory, int temperature)
+void DisplayComponent::draw(History *pHistory1, History *pHistory2, int temperature)
 { 
-  count = count+1;
-//  uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
-
   canvas->fillRect(0, 0, width, height, WTF_BLACK);
-  drawHistory(pHistory, temperature);
+  drawHistory(pHistory1, WTF_GREEN);
+  drawHistory(pHistory2, WTF_BLUE);
   canvas->flush(); 
 }
 
-void DisplayComponent::drawHistory(History *pHistory, uint16_t temperature)
+void DisplayComponent::drawHistory(History *pHistory, int color)
 {
   for (int x = 0; x < width; x++)
   {
-    //double fraction = (double)x / (double)width;
-    //int y = fraction * height;
     int y = height - pHistory->get(width - x);
-    canvas->drawPixel(x, y, WTF_WHITE);
+    canvas->drawPixel(x, y, color);
   }
 }
