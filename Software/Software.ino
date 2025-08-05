@@ -17,17 +17,17 @@ int value;
 int rise;
 
 void setup() {
-  // Wait for the serial port to be available, then announce startup.
-  Serial.begin(115200);
-  
-  while(!Serial);
-  wait();
-  wait();
-  Serial.println();
-
+  // Initialize static variables
   value = width / 2;
   rise = 1;
 
+  // Wait for the serial port to be available.
+  Serial.begin(115200);
+  while(!Serial);
+
+  // An extra pause, just to ensure that the serial port is ready.
+  wait();
+  Serial.println();
   Serial.println(F("52Can self-test starting. #################################"));
   TestHistory();
 
@@ -54,15 +54,15 @@ void loop() {
 
   if (rise == 1)
   {
-    value+=2;
+    value+=1;
   }
   else 
   {
-    value-=2;
+    value-=1;
   }  
 
-  displayComponent->draw(nullptr, 0);
+  historyComponent->push(value);
+  displayComponent->draw(historyComponent, 0);
 
   Serial.println(value);
-  wait();
 }

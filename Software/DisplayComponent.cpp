@@ -13,6 +13,7 @@ Arduino_GFX *canvas = nullptr;
 // green -> blue
 // blue -> very light blue
 
+#define SWAPXY
 
 int count;
 
@@ -24,6 +25,7 @@ void DisplayComponent::initialize()
   
   Serial.println("Creating display...");
 
+#ifdef SWAPXY
   display = new Arduino_ST7735(
     bus,
     2, //  RST
@@ -32,9 +34,24 @@ void DisplayComponent::initialize()
     height, // x
     width // y
   );
-  
+#else
+  display = new Arduino_ST7735(
+    bus,
+    2, //  RST
+    3, // rotation - this is what unswaps the x and y below
+    true, // ips
+    width, // x
+    height // y
+  );
+#endif  
+
   Serial.println("Creating canvas...");
+#ifdef SWAPXY  
   canvas = new Arduino_Canvas(height, width, display, 0, 0, 0);
+#else
+  canvas = new Arduino_Canvas(width, height, display, 0, 0, 0);
+#endif
+
 
   // The Adafruit ST7735 breakout board is natively in portrait mode, and this app wants landscape.
   // Rotation experiments:
@@ -45,6 +62,7 @@ void DisplayComponent::initialize()
   // display: height, width, r=0; canvas: height, width, r=3; stripe on left does not get updated
   // display: width, height, r=3; canvas: width, height, r=3; stripe on right does not get updated
   // display: height, width, r=3; canvas: height, width, r=0; full screen works
+  // display: height, width, r=3; canvas: width, height, r=0; doesn't work, hard to describe
   
   
   Serial.println("Starting GFX...");
@@ -60,34 +78,35 @@ void DisplayComponent::initialize()
   // This allocates memory for the canvas framebuffer, and calls begin() on the display.
   canvas->begin(speed);
 
-  display->fillScreen(RGB565_BLUE);
+  display->fillScreen(RGB565_BLACK);
   Serial.println("Display initialized.");  
 }
 
 void DisplayComponent::draw(History *pHistory, int temperature)
 { 
   count = count+1;
-  uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
+//  uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
 
-  display->fillRect(0, 0, width, height, color);
-  //canvas->fillRect(0, 0, width, height, color);
-  //canvas->flush();
+  display->fillRect(0, 0, width, height, RGB565_WHITE);
+  drawHistory(pHistory, temperature);
   display->flush(); 
+}
 
-  //char szTemperature[5];
-  //itoa(temperature, szTemperature, 10);
+void DisplayComponent::drawHistory(History *pHistory, uint16_t temperature)
+{
+  for (int x = 0; x < height; x++)
+  {
+    double fraction = (double)x / (double)height;
+    int y = fraction * width;
+    display->drawPixel(y, x, RGB565_BLACK);
 
-//  canvas.setFont(&FreeMonoBold24pt7b);
-//  canvas.setCursor(30, 48);
-//  canvas.setTextColor(LIGHTGREY);
-//  canvas.print(szTemperature);
+/*    int y = pHistory->get(width - x);
+    canvas->drawPixel(height, x, RGB565_BLACK);
 
-  //drawHistoryTop(pHistory, LIGHTBLUE);
-  //canvas->flush();
-
-  //canvas->fillScreen(backgroundColor);
-  //drawHistoryBottom(pHistory, YELLOW);
-  //canvas->flush();
+    if (y < height - 1)
+      canvas->drawPixel(height+1, x, RGB565_BLACK);
+  }*/
+  }
 }
 
 
