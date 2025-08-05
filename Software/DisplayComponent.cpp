@@ -13,6 +13,12 @@ Arduino_GFX *canvas = nullptr;
 // green -> blue
 // blue -> very light blue
 
+// Not sure why this is, but it seems to be a bug in the library.
+#define WTF_BLACK RGB565_WHITE
+#define WTF_WHITE RGB565_BLACK
+#define WTF_GREEN RGB565_RED
+#define WTF_BLUE RGB565_GREEN
+
 int count;
 
 void DisplayComponent::initialize()
@@ -57,7 +63,7 @@ void DisplayComponent::draw(History *pHistory, int temperature)
   count = count+1;
 //  uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
 
-  canvas->fillRect(0, 0, width, height, RGB565_WHITE);
+  canvas->fillRect(0, 0, width, height, WTF_BLACK);
   drawHistory(pHistory, temperature);
   canvas->flush(); 
 }
@@ -68,7 +74,7 @@ void DisplayComponent::drawHistory(History *pHistory, uint16_t temperature)
   {
     //double fraction = (double)x / (double)width;
     //int y = fraction * height;
-    int y = height - pHistory->get(x);
-    canvas->drawPixel(x, y, RGB565_BLACK);
+    int y = height - pHistory->get(width - x);
+    canvas->drawPixel(x, y, WTF_WHITE);
   }
 }
