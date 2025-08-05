@@ -32,7 +32,7 @@ void setup() {
   TestHistory();
 
   Serial.println(F("History component initializing. ##########################"));
-  historyComponent = new History(height);
+  historyComponent = new History(width);
   historyComponent->initialize();
 
   Serial.println(F("Display component initializing. ##########################"));
@@ -43,7 +43,7 @@ void setup() {
 }
 
 void loop() {
-  if (value == width)
+  if (value == height-1)
   {
     rise = 0;
   }

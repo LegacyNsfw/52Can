@@ -66,8 +66,9 @@ void DisplayComponent::drawHistory(History *pHistory, uint16_t temperature)
 {
   for (int x = 0; x < width; x++)
   {
-    double fraction = (double)x / (double)width;
-    int y = fraction * height;
+    //double fraction = (double)x / (double)width;
+    //int y = fraction * height;
+    int y = height - pHistory->get(x);
     canvas->drawPixel(x, y, RGB565_BLACK);
   }
 }
