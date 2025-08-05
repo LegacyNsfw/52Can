@@ -13,7 +13,8 @@ Arduino_GFX *canvas = nullptr;
 // green -> blue
 // blue -> very light blue
 
-#define SWAPXY
+#define SWAPXY_DISPLAY
+// #define SWAPXY_CANVAS
 
 int count;
 
@@ -25,7 +26,7 @@ void DisplayComponent::initialize()
   
   Serial.println("Creating display...");
 
-#ifdef SWAPXY
+#ifdef SWAPXY_DISPLAY
   display = new Arduino_ST7735(
     bus,
     2, //  RST
@@ -38,15 +39,15 @@ void DisplayComponent::initialize()
   display = new Arduino_ST7735(
     bus,
     2, //  RST
-    3, // rotation - this is what unswaps the x and y below
+    0, // rotation - this is what unswaps the x and y below
     true, // ips
-    width, // x
-    height // y
+    width,
+    height
   );
 #endif  
 
   Serial.println("Creating canvas...");
-#ifdef SWAPXY  
+#ifdef SWAPXY_CANVAS
   canvas = new Arduino_Canvas(height, width, display, 0, 0, 0);
 #else
   canvas = new Arduino_Canvas(width, height, display, 0, 0, 0);
@@ -87,18 +88,23 @@ void DisplayComponent::draw(History *pHistory, int temperature)
   count = count+1;
 //  uint color = ((count % 2) == 1) ? RGB565_RED : RGB565_GREEN;
 
-  display->fillRect(0, 0, width, height, RGB565_WHITE);
+  canvas->fillRect(0, 0, width, height, RGB565_WHITE);
   drawHistory(pHistory, temperature);
-  display->flush(); 
+  canvas->flush(); 
 }
 
 void DisplayComponent::drawHistory(History *pHistory, uint16_t temperature)
 {
-  for (int x = 0; x < height; x++)
+  for (int x = 0; x < width; x++)
   {
-    double fraction = (double)x / (double)height;
-    int y = fraction * width;
-    display->drawPixel(y, x, RGB565_BLACK);
+    // Draws a diagonal line
+    //double fraction = (double)x / (double)height;
+    //int y = fraction * width;
+    //display->drawPixel(y, x, RGB565_BLACK);
+
+    double fraction = (double)x / (double)width;
+    int y = fraction * height;
+    canvas->drawPixel(x, y, RGB565_BLACK);
 
 /*    int y = pHistory->get(width - x);
     canvas->drawPixel(height, x, RGB565_BLACK);
