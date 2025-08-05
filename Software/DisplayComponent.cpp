@@ -1,4 +1,5 @@
 #include <Arduino_GFX_Library.h>
+#include <font/u8g2_font_chill7_h_cjk.h>
 #include "Test.h"
 #include "Constants.h"
 #include "History.h"
@@ -52,6 +53,15 @@ void DisplayComponent::initialize()
 void DisplayComponent::draw(History *pHistory1, History *pHistory2, int temperature)
 { 
   canvas->fillRect(0, 0, width, height, WTF_BLACK);
+
+  char szTemperature[5];
+  itoa(temperature, szTemperature, 10);
+
+  canvas->setCursor(30, 48);
+  //canvas->setFont(u8g2_font_chill7_h_cjk); // u8g2_font_cubic11_h_cjk
+  canvas->setTextColor(WTF_WHITE);
+  canvas->print(szTemperature);
+
   drawHistory(pHistory1, WTF_GREEN);
   drawHistory(pHistory2, WTF_BLUE);
   canvas->flush(); 
@@ -59,7 +69,7 @@ void DisplayComponent::draw(History *pHistory1, History *pHistory2, int temperat
 
 void DisplayComponent::drawHistory(History *pHistory, int color)
 {
-  for (int x = 0; x < width; x++)
+  for (int x = 0; x < (width-5); x++)
   {
     int y = height - pHistory->get(width - x);
     canvas->drawPixel(x, y, color);

@@ -1,12 +1,14 @@
 #include <Arduino_GFX_Library.h>
+#include "Constants.h"
 #include "Test.h"
 #include "History.h"
 #include "DisplayComponent.h"
-#include "Constants.h"
+#include "CanComponent.h"
 
 History *historyComponent1 = nullptr;
 History *historyComponent2 = nullptr;
 DisplayComponent *displayComponent = nullptr;
+CanComponent *canComponent = nullptr;
 
 
 void wait() {
@@ -48,6 +50,10 @@ void setup() {
   Serial.println(F("Display component initializing. ##########################"));
   displayComponent = new DisplayComponent();
   displayComponent->initialize();
+
+  Serial.println(F("CAN component initializing. ###############################"));
+  canComponent = new CanComponent();
+  canComponent->initialize();
 
   Serial.println(F("Initialization complete. ##################################"));
 }
@@ -91,11 +97,13 @@ void loop() {
     value2-=1;
   }
 
+  canComponent->loop();
+  int temperature = canComponent->temperature;
   historyComponent1->push(value1);
   historyComponent2->push(value2);
-  displayComponent->draw(historyComponent1, historyComponent2, 0);
+  displayComponent->draw(historyComponent1, historyComponent2, temperature);
 
-  Serial.print(value1);
-  Serial.print(", ");
-  Serial.println(value2);
+  //Serial.print(value1);
+  //Serial.print(", ");
+  //Serial.println(value2);
 }
