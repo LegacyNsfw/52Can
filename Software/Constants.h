@@ -25,5 +25,10 @@
 #define DC   3
 #define RST  4
 
+// Using AEM's CAN value convention
+// .0001 Lambda/bit, so a uint16_t represents 0 to 6.5535 Lambda
+#define MAX_LAMBDA ((uint16_t)(10 * 1000 * 1.36)) // 20:1
+#define MIN_LAMBDA ((uint16_t)(10 * 1000 * 0.68)) // 10:1
+
 
 

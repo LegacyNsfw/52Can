@@ -7,6 +7,11 @@
 #define SPI_CS_PIN  D7
 MCP_CAN* CAN = nullptr;
 
+uint32_t AEM_FLUID_TEMPERATURE_CAN_ID = 0x000A0302;
+uint32_t AEM_FLUID_PRESSURE_CAN_ID = 0x000A0301;
+uint32_t AEM_WIDEBAND_1_CAN_ID = 0x00000180;
+uint32_t AEM_WIDEBAND_2_CAN_ID = 0x00000181;
+
 void CanComponent::initialize()
 {
   // Initialize CAN object
@@ -16,6 +21,9 @@ void CanComponent::initialize()
   {
     Serial.println("CAN initialization failed, will retry.");
   }
+
+  CAN->init_Filt(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);
+  CAN->init_Mask(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);
 
   Serial.println("CAN initialization succeeded.");
 }
@@ -31,9 +39,20 @@ void CanComponent::loop()
         
       CAN->readMsgBufID(&canId, &len, buf);    // read data,  len: data length, buf: data buf
       
-      if (canId == 0xA0302)
+      if (canId == AEM_FLUID_TEMPERATURE_CAN_ID)
       {
         temperature = (((int)buf[1] * 9) / 5) + 32;
+      }
+
+      // .0001 Lambda/bit, or 0 to 6.5535 Lambda
+      if (canId == AEM_WIDEBAND_1_CAN_ID)
+      {
+        lambda1 = (buf[0] << 8 | buf[1]);
+      }
+
+      if (canId == AEM_WIDEBAND_2_CAN_ID)
+      {
+        lambda2 = (buf[0] << 8 | buf[1]);
       }
 
       /**

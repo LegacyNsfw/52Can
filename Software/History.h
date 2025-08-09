@@ -2,14 +2,14 @@ class History
 {
 private:
   int size;
-  int* buffer;
+  uint16_t *buffer;
   int currentIndex;
 
 public:
   History(int _size)
   {
     size = _size;
-    buffer = new int[_size];
+    buffer = new uint16_t[_size];
     currentIndex = 0;
   }
   
@@ -22,7 +22,7 @@ public:
 
   void debug();
 
-  int get(int index)
+  uint16_t get(int index)
   {
     int start = currentIndex;
     int actualIndex = start - index;
@@ -33,7 +33,7 @@ public:
     return buffer[actualIndex];
   }
 
-  int push(int value)
+  int push(uint16_t value)
   {
     if (buffer == nullptr || size == 0) {
       Serial.println("ERROR: Cannot push to null buffer!");

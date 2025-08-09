@@ -16,19 +16,23 @@ void wait() {
   yield();
 }
 
-int value1;
+uint16_t value1;
 int rise1;
 
-int value2;
+uint16_t value2;
 int rise2;
+
+int16_t delta;
 
 void setup() {
   // Initialize static variables
-  value1 = 0;
+  value1 = MIN_LAMBDA;
   rise1 = 1;
 
-  value2 = 64;
+  value2 = MAX_LAMBDA;
   rise2 = 1;
+
+  delta = (MAX_LAMBDA - MIN_LAMBDA) / 150;
 
   // Wait for the serial port to be available.
   Serial.begin(115200);
@@ -60,41 +64,41 @@ void setup() {
 
 void loop() {
   // Animate value1
-  if (value1 == height-1)
+  if (value1 >= MAX_LAMBDA)
   {
     rise1 = 0;
   }
-  else if (value1 == 0)
+  else if (value1 <= MIN_LAMBDA)
   {
     rise1 = 1;
   }
 
   if (rise1 == 1)
   {
-    value1+=1;
+    value1+=delta;
   }
   else 
   {
-    value1-=1;
+    value1-=delta;
   }  
 
   // Animate value2
-  if (value2 == height-1)
+  if (value2 >= MAX_LAMBDA)
   {
     rise2 = 0;
   }
-  else if (value2 == 0)
+  else if (value2 <= MIN_LAMBDA)
   {
     rise2 = 1;
   }
 
   if (rise2 == 1)
   {
-    value2+=1;
+    value2+=delta;
   }
   else
   {
-    value2-=1;
+    value2-=delta;
   }
 
   canComponent->loop();
@@ -102,8 +106,4 @@ void loop() {
   historyComponent1->push(value1);
   historyComponent2->push(value2);
   displayComponent->draw(historyComponent1, historyComponent2, temperature);
-
-  //Serial.print(value1);
-  //Serial.print(", ");
-  //Serial.println(value2);
 }
