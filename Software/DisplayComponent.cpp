@@ -53,6 +53,8 @@ void DisplayComponent::initialize()
   Serial.println("Display initialized.");  
 }
 
+
+#ifdef GAUGE_DUAL_AFR_MOCK_DATA || GAUGE_DUAL_AFR  
 void toAfr(uint16_t aemLambda, char *szAfr)
 {
   // Convert AEM Lambda to AFR
@@ -80,7 +82,7 @@ int getYCoordinateForAemLambda(uint16_t aemLambda)
   return (height - result);
 }
 
-void DisplayComponent::draw(History *pHistory1, History *pHistory2, int temperature)
+void DisplayComponent::draw(History *pHistory1, History *pHistory2)
 { 
   canvas->fillRect(0, 0, width, height, WTF_BLACK);
 
@@ -130,3 +132,33 @@ void DisplayComponent::drawHistory(History *pHistory, int color)
     canvas->drawPixel(x, y, color);
   }
 }
+#endif
+
+#ifdef COMBINATION_ALARM
+// TODO: change rendering when temperature is above 250F, pressure is below 56psi, or knock is above 0
+// High temperature: white text on red background
+// Low pressure: white text on blue background
+// Knock: back text on white background
+void DisplayComponent::draw(int temperature, int pressure, int knock)
+{
+  canvas->fillRect(0, 0, width, height, WTF_BLACK);
+
+  canvas->setTextSize(2);
+  canvas->setCursor(0, 0);
+  canvas->setTextColor(WTF_GREEN);
+  canvas->print("Temp: ");
+  canvas->print(temperature);
+  
+  canvas->setCursor(0, TEXT_HEIGHT + 2);
+  canvas->setTextColor(WTF_BLUE);
+  canvas->print("Pressure: ");
+  canvas->print(pressure);
+
+  canvas->setCursor(0, (TEXT_HEIGHT + 2) * 2);
+  canvas->setTextColor(WTF_RED);
+  canvas->print("Knock: ");
+  canvas->print(knock);
+
+  canvas->flush();
+}
+#endif

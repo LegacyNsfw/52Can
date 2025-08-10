@@ -14,7 +14,7 @@ int rise;
 int drawMax;
 long iteration;
 
-DisplayComponent* displayComponent;
+DisplayComponent* pDisplayComponent;
 //CanComponent* canComponent;
 History* history;
 
@@ -37,7 +37,7 @@ void setup()
   Serial.println(F("Variables initialized."));
   
   Serial.println(F("Step 2: Creating DisplayComponent..."));
-  displayComponent = new DisplayComponent();
+  pDisplayComponent = new DisplayComponent();
   Serial.println(F("DisplayComponent created."));
   
   //Serial.println(F("Step 3: Creating CanComponent..."));
@@ -68,7 +68,7 @@ void setup()
   //canComponent->initialize();
 
   Serial.println(F("Step 5: Initializing DisplayComponent..."));
-  displayComponent->initialize();
+  pDisplayComponent->initialize();
   Serial.println(F("DisplayComponent initialized."));
 
   Serial.println("Empty history:");
@@ -130,7 +130,7 @@ void loop() {
   Serial.println(F("C"));
   wait();
   
-  displayComponent->draw(history, 0); // canComponent.temperature);
+  pDisplayComponent->draw(history, 0); // canComponent.temperature);
   //canComponent->loop();
   Serial.println(F("Z"));
   

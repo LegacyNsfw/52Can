@@ -11,9 +11,11 @@ uint32_t AEM_FLUID_TEMPERATURE_CAN_ID = 0x000A0302;
 uint32_t AEM_FLUID_PRESSURE_CAN_ID = 0x000A0301;
 uint32_t AEM_WIDEBAND_1_CAN_ID = 0x00000180;
 uint32_t AEM_WIDEBAND_2_CAN_ID = 0x00000181;
+uint32_t PLEX_KNOCK_COUNT_CAN_ID = 0x00000000; // Placeholder, replace with actual ID
 
 void CanComponent::initialize()
 {
+#ifndef GAUGE_DUAL_AFR_MOCK_DATA
   // Initialize CAN object
   CAN = new MCP_CAN(SPI_CS_PIN);
   
@@ -21,56 +23,67 @@ void CanComponent::initialize()
   {
     Serial.println("CAN initialization failed, will retry.");
   }
-
+#endif
+#ifdef GAUGE_COMBINATION_ALARM
   CAN->init_Filt(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);
   CAN->init_Mask(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);
+
+  CAN->init_Filt(0, 1, AEM_FLUID_PRESSURE_CAN_ID);
+  CAN->init_Mask(0, 1, AEM_FLUID_PRESSURE`_CAN_ID);
+
+  CAN->init_Filt(0, 1, PLEX_KNOCK_COUNT_CAN_ID);
+  CAN->init_Mask(0, 1, PLEX_KNOCK_COUNT_CAN_ID);
+#endif
+
+#ifdef GAUGE_DUAL_AFR
+  CAN->init_Filt(0, 1, AEM_WIDEBAND_1_CAN_ID);
+  CAN->init_Mask(0, 1, AEM_WIDEBAND_1_CAN_ID);
+
+  CAN->init_Filt(0, 1, AEM_WIDEBAND_2_CAN_ID);
+  CAN->init_Mask(0, 1, AEM_WIDEBAND_2_CAN_ID);
+#endif
 
   Serial.println("CAN initialization succeeded.");
 }
 
 void CanComponent::loop()
 {
-  byte canState = CAN->checkReceive();
-  if (CAN_MSGAVAIL == canState)            // check if data coming
-  {
-      unsigned long canId = 0;
-      unsigned char len = 0;
-      unsigned char buf[8];
-        
-      CAN->readMsgBufID(&canId, &len, buf);    // read data,  len: data length, buf: data buf
+  // Read up to 4 messages
+  for (int i = 0; i < 4; i++) {
+
+    // If no messages are available, break out of the loop
+    byte canState = CAN->checkReceive();
+    if (CAN_MSGAVAIL != canState) {
+      break;
+    }
+
+    // Process whatever message is available
+    unsigned long canId = 0;
+    unsigned char len = 0;
+    unsigned char buf[8];
       
-      if (canId == AEM_FLUID_TEMPERATURE_CAN_ID)
-      {
-        temperature = (((int)buf[1] * 9) / 5) + 32;
-      }
+    CAN->readMsgBufID(&canId, &len, buf);    // read data,  len: data length, buf: data buf
+    
+    if (canId == AEM_FLUID_TEMPERATURE_CAN_ID)
+    {
+      temperature = (((int)buf[1] * 9) / 5) + 32;
+    }
 
-      // .0001 Lambda/bit, or 0 to 6.5535 Lambda
-      if (canId == AEM_WIDEBAND_1_CAN_ID)
-      {
-        lambda1 = (buf[0] << 8 | buf[1]);
-      }
+    // 0.01 bar/bit = 0 to 655.35 bar
+    if (canId == AEM_FLUID_PRESSURE_CAN_ID)
+    {
+      pressure = (buf[0] << 8 | buf[1]);
+    }    
 
-      if (canId == AEM_WIDEBAND_2_CAN_ID)
-      {
-        lambda2 = (buf[0] << 8 | buf[1]);
-      }
+    // .0001 Lambda/bit, or 0 to 6.5535 Lambda
+    if (canId == AEM_WIDEBAND_1_CAN_ID)
+    {
+      lambda1 = (buf[0] << 8 | buf[1]);
+    }
 
-      /**
-      Serial.println("-----------------------------");
-      Serial.print("Get data from ID: ");
-      Serial.println(canId, HEX);
-      
-      for(int i = 0; i<len; i++)    // print the data
-      {
-          Serial.print(buf[i], HEX);
-          Serial.print("\t");
-      }
-      Serial.println();
-      */
-  }
-  else
-  {
-    //Serial.print(canState, HEX); // 4
-    //Serial.println(".");
+    if (canId == AEM_WIDEBAND_2_CAN_ID)
+    {
+      lambda2 = (buf[0] << 8 | buf[1]);
+    }
   }
 }

@@ -1,0 +1,7 @@
+move actual (solder) Xiao pin rows very slightly further apart
+move upper/inner pin row (U1) to the outside
+add a new extra/outer row at the top
+move everything down a little
+add 1 more pin to the rows, on the side furthest from the edge
+link all 7 Xiao pins to the outside rows
+link the 5 outside non-Xiao pins to the outside rows (for the power supply)

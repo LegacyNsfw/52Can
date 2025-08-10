@@ -4,36 +4,20 @@
 #include "History.h"
 #include "DisplayComponent.h"
 #include "CanComponent.h"
+#include "MockAfrData.h"
 
-History *historyComponent1 = nullptr;
-History *historyComponent2 = nullptr;
-DisplayComponent *displayComponent = nullptr;
-CanComponent *canComponent = nullptr;
-
+History *pLeftHistory = nullptr;
+History *pRightHistory = nullptr;
+DisplayComponent *pDisplayComponent = nullptr;
+CanComponent *pCanComponent = nullptr;
+MockAfrData *pMockAfrData = nullptr;
 
 void wait() {
   delay(250);
   yield();
 }
 
-uint16_t value1;
-int rise1;
-
-uint16_t value2;
-int rise2;
-
-int16_t delta;
-
-void setup() {
-  // Initialize static variables
-  value1 = MIN_LAMBDA;
-  rise1 = 1;
-
-  value2 = MAX_LAMBDA;
-  rise2 = 1;
-
-  delta = (MAX_LAMBDA - MIN_LAMBDA) / 150;
-
+void setup() {  
   // Wait for the serial port to be available.
   Serial.begin(115200);
   while(!Serial);
@@ -44,66 +28,58 @@ void setup() {
   Serial.println(F("52Can self-test starting. #################################"));
   TestHistory();
 
+#ifdef GAUGE_DUAL_AFR_MOCK_DATA || GAUGE_DUAL_AFR
   Serial.println(F("History component initializing. ##########################"));
-  historyComponent1 = new History(width);
-  historyComponent1->initialize();
+  pLeftHistory = new History(width);
+  pLeftHistory->initialize();
 
-  historyComponent2 = new History(width);
-  historyComponent2->initialize();
+  pRightHistory = new History(width);
+  pRightHistory->initialize();
+#endif
+
+#ifdef GAUGE_DUAL_AFR_MOCK_DATA
+  Serial.println(F("Mock AFR data component initializing. ####################"));
+  pMockAfrData = new MockAfrData();
+  pMockAfrData->initialize();
+#endif 
 
   Serial.println(F("Display component initializing. ##########################"));
-  displayComponent = new DisplayComponent();
-  displayComponent->initialize();
+  pDisplayComponent = new DisplayComponent();
+  pDisplayComponent->initialize();
 
   Serial.println(F("CAN component initializing. ###############################"));
-  canComponent = new CanComponent();
-  canComponent->initialize();
+  pCanComponent = new CanComponent();
+  pCanComponent->initialize();
 
   Serial.println(F("Initialization complete. ##################################"));
 }
 
 void loop() {
-  // Animate value1
-  if (value1 >= MAX_LAMBDA)
-  {
-    rise1 = 0;
-  }
-  else if (value1 <= MIN_LAMBDA)
-  {
-    rise1 = 1;
-  }
 
-  if (rise1 == 1)
-  {
-    value1+=delta;
-  }
-  else 
-  {
-    value1-=delta;
-  }  
-
-  // Animate value2
-  if (value2 >= MAX_LAMBDA)
-  {
-    rise2 = 0;
-  }
-  else if (value2 <= MIN_LAMBDA)
-  {
-    rise2 = 1;
-  }
-
-  if (rise2 == 1)
-  {
-    value2+=delta;
-  }
-  else
-  {
-    value2-=delta;
-  }
-
+#ifdef GAUGE_DUAL_AFR_MOCK_DATA  
+  pMockAfrData->loop();
+#else
   canComponent->loop();
-  int temperature = canComponent->temperature;
-  historyComponent1->push(value1);
-  historyComponent2->push(value2);
-  displayComponent->draw(historyComponent1, historyComponent2, temperature);
+#endif
+
+#ifdef COMBINATION_ALARM  
+  pCanComponent->loop();
+  int temperature = pCanComponent->temperature;
+  int pressure = pCanComponent->fuelPressure;
+  int knock = pCanComponent->knock;
+  pDisplayComponent->draw(temperature, pressure, knock);
+#endif
+
+#ifdef GAUGE_DUAL_AFR_MOCK_DATA
+  pLeftHistory->push(pMockAfrData->value1);
+  pRightHistory->push(pMockAfrData->value2);
+  pDisplayComponent->draw(pLeftHistory, pRightHistory);
+#endif
+
+#ifdef GAUGE_DUAL_AFR
+  pCanComponent->loop();
+  pLeftHistory->push(pCanComponent->lambda1);
+  pRightHistory->push(pCanComponent->lambda2);
+  pDisplayComponent->draw(pLeftHistory, pRightHistory);
+#endif
 }
