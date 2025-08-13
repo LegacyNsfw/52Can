@@ -1,6 +1,6 @@
 # 52mm Canbus Gauge Pod
 
-<img src="/Resources/ToucanRacer.png" alt="Toucan driving a race car" height="200" width="200"/>
+<img src="/Assets/ToucanRacer.png" alt="Toucan driving a race car" height="200" width="200"/>
 
 Designed for the following hardware:
 
