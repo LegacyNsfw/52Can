@@ -6,7 +6,8 @@ Designed for the following hardware:
 * CanBus: SeeedStudio's [Xiao CanBus expansion board](https://www.seeedstudio.com/Seeed-Studio-CAN-Bus-Breakout-Board-for-XIAO-and-QT-Py-p-5702.html) ([docs](https://wiki.seeedstudio.com/xiao-can-bus-expansion/))
 * Display: Adafruit's [1.8" TFT LCD + MicroSD board](https://www.adafruit.com/product/358) ([docs](https://learn.adafruit.com/1-8-tft-display))
 
-As I write this I'm waiting for PCBs from Aisler that will hopefully make it pretty simple to assemble everything.
+The first iteration of the circuit board is terrible. Don't even bother. I'm going to fix it, I promise.
 
 
 <img src="/Resources/ToucanRacer.png" alt="Toucan driving a race car" height="200" width="200"/>
+
