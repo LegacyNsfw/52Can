@@ -1,7 +1,5 @@
 # 52mm Canbus Gauge Pod
 
-<img src="/Resources/ToucanRacer.png" alt="Toucan driving a race car" height="200" width="200"/>
-
 Designed for the following hardware:
 
 * Processor: SeeedStudio's [Xiao ESP32C3](https://www.seeedstudio.com/Seeed-XIAO-ESP32C3-p-5431.html) ([docs](https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/))  (I started with the Xiao SAMD21, but its SPI is not fast enough)
@@ -10,3 +8,5 @@ Designed for the following hardware:
 
 As I write this I'm waiting for PCBs from Aisler that will hopefully make it pretty simple to assemble everything.
 
+
+<img src="/Resources/ToucanRacer.png" alt="Toucan driving a race car" height="200" width="200"/>
