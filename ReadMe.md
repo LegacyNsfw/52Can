@@ -1,10 +1,6 @@
 # 52mm Canbus Gauge Pod
 
-
-
-!\[Toucan driving a race car](Resources/ToucanRacer.png)
-
-
+<img src="/Resources/ToucanRacer.png" alt="Toucan driving a race car" height="200" width="200"/>
 
 Designed for the following hardware:
 
@@ -13,3 +9,4 @@ Designed for the following hardware:
 * Display: Adafruit's [1.8" TFT LCD + MicroSD board](https://www.adafruit.com/product/358) ([docs](https://learn.adafruit.com/1-8-tft-display))
 
 As I write this I'm waiting for PCBs from Aisler that will hopefully make it pretty simple to assemble everything.
+
