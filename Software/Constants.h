@@ -30,8 +30,11 @@
 #define MAX_LAMBDA ((uint16_t)(10 * 1000 * 1.36)) // 20:1
 #define MIN_LAMBDA ((uint16_t)(10 * 1000 * 0.68)) // 10:1
 
+// Define this to use mock data instead of CAN data
+#define MOCK_DATA
+
 // Gauge types
-#define GAUGE_DUAL_AFR_MOCK_DATA
 // #define GAUGE_DUAL_AFR
-// #define COMBINATION_ALARM // Fuel pressure, oil temperature, and knock
+// #define GAUGE_DUAL_AFR
+#define GAUGE_COMBINATION_ALARM // Fuel pressure, oil temperature, and knock
 

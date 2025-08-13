@@ -11,11 +11,10 @@ uint32_t AEM_FLUID_TEMPERATURE_CAN_ID = 0x000A0302;
 uint32_t AEM_FLUID_PRESSURE_CAN_ID = 0x000A0301;
 uint32_t AEM_WIDEBAND_1_CAN_ID = 0x00000180;
 uint32_t AEM_WIDEBAND_2_CAN_ID = 0x00000181;
-uint32_t PLEX_KNOCK_COUNT_CAN_ID = 0x00000000; // Placeholder, replace with actual ID
+uint32_t PLEX_KNOCK_CAN_ID = 0x00002050;
 
 void CanComponent::initialize()
 {
-#ifndef GAUGE_DUAL_AFR_MOCK_DATA
   // Initialize CAN object
   CAN = new MCP_CAN(SPI_CS_PIN);
   
@@ -23,32 +22,26 @@ void CanComponent::initialize()
   {
     Serial.println("CAN initialization failed, will retry.");
   }
-#endif
-#ifdef GAUGE_COMBINATION_ALARM
-  CAN->init_Filt(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);
-  CAN->init_Mask(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);
 
-  CAN->init_Filt(0, 1, AEM_FLUID_PRESSURE_CAN_ID);
-  CAN->init_Mask(0, 1, AEM_FLUID_PRESSURE`_CAN_ID);
+  int mask = AEM_FLUID_TEMPERATURE_CAN_ID | 
+             AEM_FLUID_PRESSURE_CAN_ID | 
+             PLEX_KNOCK_CAN_ID | 
+             AEM_WIDEBAND_1_CAN_ID | 
+             AEM_WIDEBAND_2_CAN_ID;
+  CAN->init_Mask(0, 1, mask);
 
-  CAN->init_Filt(0, 1, PLEX_KNOCK_COUNT_CAN_ID);
-  CAN->init_Mask(0, 1, PLEX_KNOCK_COUNT_CAN_ID);
-#endif
-
-#ifdef GAUGE_DUAL_AFR
-  CAN->init_Filt(0, 1, AEM_WIDEBAND_1_CAN_ID);
-  CAN->init_Mask(0, 1, AEM_WIDEBAND_1_CAN_ID);
-
-  CAN->init_Filt(0, 1, AEM_WIDEBAND_2_CAN_ID);
-  CAN->init_Mask(0, 1, AEM_WIDEBAND_2_CAN_ID);
-#endif
+  CAN->init_Filt(0, 1, AEM_FLUID_TEMPERATURE_CAN_ID);  
+  CAN->init_Filt(1, 1, AEM_FLUID_PRESSURE_CAN_ID);
+  CAN->init_Filt(2, 1, PLEX_KNOCK_CAN_ID);
+  CAN->init_Filt(3, 1, AEM_WIDEBAND_1_CAN_ID);
+  CAN->init_Filt(4, 1, AEM_WIDEBAND_2_CAN_ID);
 
   Serial.println("CAN initialization succeeded.");
 }
 
 void CanComponent::loop()
 {
-  // Read up to 4 messages
+  // Read up to 5 messages
   for (int i = 0; i < 4; i++) {
 
     // If no messages are available, break out of the loop
@@ -85,5 +78,10 @@ void CanComponent::loop()
     {
       lambda2 = (buf[0] << 8 | buf[1]);
     }
+
+    if (canId == PLEX_KNOCK_CAN_ID)
+    {
+      knock = buf[4] << 8 | buf[5];
+    }    
   }
 }
