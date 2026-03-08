@@ -19,7 +19,7 @@ difference()
         cylinder(h = 2, r1 = boltRadius, r2 = boltRadius, center = true);
     
     // strain relief
-    translate([0, 15, 0])
+    translate([0, 17, 0])
     {
         cylinder(h = 2, r1 = reliefRadius, r2 = reliefRadius, center = true);
         translate([10, 0, 0])
