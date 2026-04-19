@@ -112,13 +112,17 @@ module base()
             cylinder(h = 100, r = 1.2, center = true);
         translate([0, -boltPosition, 0])
             cylinder(h = 100, r = 1.2, center = true);
+        
+        // USB-C port
+        translate([boltPosition, 0, 0])
+            cube([10,15,20], center = true);
     }
 }
 
 // You'll probably want to comment out the top() or bottom() to print them separately.
 difference() {
     union () {
-        //top();
+        top();
         base();
     }
     translate([0, 0, 4])
