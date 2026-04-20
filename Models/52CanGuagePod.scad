@@ -122,7 +122,7 @@ module base()
 // You'll probably want to comment out the top() or bottom() to print them separately.
 difference() {
     union () {
-        top();
+        //top();
         base();
     }
     translate([0, 0, 4])
