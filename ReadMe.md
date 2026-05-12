@@ -6,6 +6,10 @@
 
 I've built a gauge, and it seems to work on my desk... it's in my car now. But my car's cylinder heads are at a shop across town.
 
+If the engine was in one piece, this would probably show the AFR from the left and right banks, with seismograph-style traces that scroll from right to left. The horizontal reference lines indicate the target AFR for cruise and for power enrichment.
+
+<img src="/Assets/GaugeKindaWorks.jpg" alt="Gauge displaying zeroes" />
+
 # Project Goals
 
 * Display data from CAN bus.
